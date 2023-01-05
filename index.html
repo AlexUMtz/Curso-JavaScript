@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      //POO
+
+      /*
+Clases -> Modelo a seguir
+Objetos -> Es una instancia de una clase
+    Atributos -> Es una característica o propiedad
+                 del objeto(son variables dentro de 
+                 un objeto)
+    Métodos -> Son las acciones que un objeto puede
+               realizar (son funciones dentro de un 
+                objeto)
+*/
+
+      // //Funcion constructora
+      // function Animal(nombre, genero) {
+      //     //Atributos
+      //     this.nombre = nombre;
+      //     this.genero = genero;
+      //     //Métodos
+      //     this.sonar = function (){
+      //         console.log("Sonidos");
+      //     }
+      // }
+
+      // const snoopy = new Animal("Snoopy","Macho"),
+      //     lolaBunny = new Animal("Lola Bunny","Hembra");
+
+      /*Funcion constructora donde asignamos los
+metodos al prototipo, no a la funcion como tal */
+      // function Animal(nombre, genero) {
+      //   //Atributos
+      //   this.nombre = nombre;
+      //   this.genero = genero;
+      // }
+
+      /*Metodos agregados al protoripo de la funcion
+constructora*/
+      //Métodos
+      // Animal.prototype.sonar = function () {
+      //   console.log("Sonidos");
+      // };
+
+      //Herencia Prototípica
+      // function Perro(nombre, genero, tamanio) {
+      //   this.super = Animal;
+      //   this.super(nombre, genero);
+      //   this.tamanio = tamanio;
+      // }
+
+      //Perro esta heredando de Animal
+      // Perro.prototype = new Animal();
+      // Perro.prototype.constructor = Perro;
+
+      // /*Sobreescritura de metodos del prototipo padre
+      // en el hijo*/
+      // Perro.prototype.sonar = function () {
+      //   console.log("Soy un perro y mi sonido es un ladrido");
+      // };
+
+      // Perro.prototype.ladrar = function () {
+      //   console.log("GUAAAAAA!!");
+      // };
+
+      // const snoopy = new Perro("Snoopy", "Macho", "Mediano");
+
+      // console.log(snoopy);
+
+      /*
+class Animal {
+  //El constructor es un método especial que se
+  //ejecuta en el momento de instanciar la clase
+  constructor(nombre, genero) {
+    this.nombre = nombre;
+    this.genero = genero;
+  }
+  //Métodos
+  sonar() {
+    console.log("Hago sonidos porque estoy vivo");
+  }
+  saludar() {
+    console.log(`Hola me llamo ${this.nombre}`);
+  }
+}
+
+//Llamada a la función
+const snoopy = new Animal("Snoopy", "Macho");
+console.log(snoopy);
+//Ejecutar métodos
+snoopy.sonar();
+snoopy.saludar();
+
+class Perro extends Animal {
+  constructor(nombre, genero, tamaño) {
+    //Con el método super se llama a la otra clase
+    //pasandole los argumentos que se solicitan
+    super(nombre, genero);
+    this.tamaño = tamaño;
+    this.raza = null;
+  }
+  //Sobre escritura de método
+  sonar() {
+    console.log("Soy un perro y mi sonido es un ladrido");
+  }
+  ladrar() {
+    console.log("Guaa Guaaa!!");
+  }
+  //Un metodo estático se puede ejecutar sin
+  //necesidad de instanciar la clase
+  static queEres() {
+    console.log(
+      "Los perros somos animales mamiferes que pertenecemos a la familia de los caninos. Somos considerados los mejores amigos del hombre"
+    );
+  }
+  
+  //Los setters y getters son métodos especiales que
+  //nos permiten establecer y obtener los valores de
+  //atributos de nuestra clase
+  
+  set setRaza(raza) {
+    this.raza = raza;
+  }
+  get getRaza() {
+    return this.raza;
+  }
+}
+
+Perro.queEres();
+
+const scooby = new Perro("Scooby", "Macho", "Gigante");
+console.log(scooby);
+scooby.sonar();
+console.log(scooby.getRaza);
+scooby.setRaza = "Gran Danes";
+console.log(scooby.getRaza);
+*/
+
+      /*
+//OBJETO CONSOLE
+
+console.log(console);
+console.error("Esto es un error");
+console.warn("Esto es un aviso");
+console.info("Esto es un mensaje informativo");
+console.log("Un registro de lo que ha pasado");
+
+let nombre = "Alejandro",
+  apellido = "Martinez",
+  edad = 21;
+
+console.log(nombre);
+console.log(apellido);
+console.log(edad);
+console.log(nombre, apellido, edad);
+
+console.log(`Mi nombre es ${nombre} ${apellido} y tengo ${edad}`);
+
+console.log("Mi nombre es %s %s y tengo %d", nombre, apellido, edad);
+
+console.log(window);
+console.log(document);
+console.dir(window);
+console.dir(document);
+
+console.clear();
+
+console.group("Cursos de JM en YT");
+console.log("Curso de JavaScript");
+console.log("Curso de NodeJS");
+console.log("Curso de FlexBox");
+console.log("Curso de Grid");
+console.groupEnd();
+
+console.groupCollapsed("Cursos de JM en YT");
+console.log("Curso de JavaScript");
+console.log("Curso de NodeJS");
+console.log("Curso de FlexBox");
+console.log("Curso de Grid");
+console.groupEnd();
+
+console.clear();
+
+console.table(Object.entries(console).sort());
+
+const numeros = [1, 2, 3, 4, 5],
+  vocales = ["a", "e", "i", "o", "u"];
+
+console.table(numeros);
+console.table(vocales);
+
+const perro = {
+  nombre: "Boni",
+  raza: "Boxer",
+  color: "Cafe",
+};
+
+console.table(perro);
+console.clear();
+
+console.time("Cuanto tiempo tarda mi codigo");
+const array = Array(1000000);
+
+for (let i = 0; i < array.length; i++) {
+  array[i] = i;
+}
+
+console.timeEnd("Cuanto tiempo tarda mi codigo");
+
+console.clear();
+
+for (let i = 0; i < 100; i++) {
+  console.count("Codigo for");
+  console.log(i);
+}
+console.clear();
+
+let x = 3,
+  y = 2,
+  pruebaXY = "Se espera que X sea menor que Y";
+
+console.assert(x < y, { x, y, pruebaXY });
+*/
+
+      /*
+console.log(Date());
+
+let fecha = new Date();
+console.log(fecha);
+//Dia del mes
+console.log(fecha.getDate());
+//Dia de la semana 0-6
+console.log(fecha.getDay());
+//Mes del año 0-11
+console.log(fecha.getMonth());
+//
+console.log(fecha.getYear());
+console.log(fecha.getFullYear());
+//Hora
+console.log(fecha.getHours());
+//Minutos
+console.log(fecha.getMinutes());
+//Segundos
+console.log(fecha.getSeconds());
+//Milisegundos
+console.log(fecha.getMilliseconds());
+//
+console.log(fecha.getHours());
+console.log(fecha.toDateString());
+console.log(fecha.toLocaleString());
+console.log(fecha.toLocaleDateString());
+console.log(fecha.toLocaleTimeString());
+console.log(fecha.getTimezoneOffset());
+console.log(fecha.getUTCDate());
+console.log(fecha.getUTCHours());
+console.log(Date.now());
+console.log(Date.apply());
+
+let cumpleAlex = new Date(2001, 2, 15);
+console.log(cumpleAlex);
+*/
+      /*
+console.log(Math);
+console.table(Math);
+console.dir(Math);
+
+//Obtiene el valor absoluto
+console.log(Math.abs(-7.8));
+//Redondea al numero entero mayor
+console.log(Math.ceil(7.8));
+//Redondea al numero entero menor
+console.log(Math.floor(7.8));
+//Redondea al mas cercano inmediato
+console.log(Math.round(7.8));
+//Raiz cuadrada
+console.log(Math.sqrt(4));
+//Potencias
+console.log(Math.pow(2, 3));
+//Indica si es negativo o positivo (o cero)
+console.log(Math.sign(-5));
+//Da un valor aleatorio entre 0 y 1
+console.log(Math.random());
+//Numero aleatorio entre 0 y 1000
+console.log(Math.round(Math.random() * 1000));
+*/
+
+      /*
+function saludar(nombre) {
+  nombre = nombre || "Desconocido";
+  console.log(`Hola ${nombre}`);
+}
+
+saludar("Alex");
+saludar();
+console.log("cadena" || "Valor de la derecha");
+console.log(1 || "Valor de la derecha");
+console.log(true || "Valor de la derecha");
+console.log([] || "Valor de la derecha");
+console.log({} || "Valor de la derecha");
+console.log(false || "Valor de la derecha");
+console.log(null || "Valor de la derecha");
+console.log(undefined || "Valor de la derecha");
+console.log("" || "Valor de la derecha");
+console.log(-2 || "Valor de la derecha");
+console.log(0 || "Valor de la derecha");
+
+console.log("cadena" && "Valor de la derecha");
+console.log(1 && "Valor de la derecha");
+console.log(true && "Valor de la derecha");
+console.log([] && "Valor de la derecha");
+console.log({} && "Valor de la derecha");
+console.log(false && "Valor de la derecha");
+console.log(nsull && "Valor de la derecha");
+console.log(undefined && "Valor de la derecha");
+console.log("" && "Valor de la derecha");
+console.log(-2 && "Valor de la derecha");
+console.log(0 && "Valor de la derecha");
+
+console.log();
+*/
+
+      /*
+
+
+console.log(window);
+//window.alert("Esto es una alerta");
+//window.confirm("Esto es una confirmación");
+//window.prompt("Esto es un prompt, ingresa un valor");
+
+let alerta = alert("Esto es una alerta"),
+  confirmacion = confirm("Esto es una confirmación"),
+  aviso = prompt("Esto es un aviso, ingresa un valor");
+
+console.log(alerta);
+console.log(confirmacion);
+console.log(aviso);
+
+
+let cadena = "Lorem ipsum dolor sit amet consectetur lorem";
+
+let expReg = new RegExp("lorem", "ig");
+console.log(expReg.test(cadena));
+console.log(expReg.exec(cadena));
+
+let expReg2 = /lorem/gi;
+console.log(expReg2.test(cadena));
+console.log(expReg2.exec(cadena));
+
+
+//***************
+//*** Funcion ANONIMA AUTOEJECUTABLE
+
+
+(function () {
+  console.log("Mi primer IIFE");
+})();
+
+(function (d, w, c) {
+  console.log("Mi segunda IIFE");
+  console.log(d);
+  console.log(w);
+  c.log("Esto es un console");
+})(document, window, console);
+
+//Formas de escribir las funciones Anónima
+//Autoejecutables
+
+//Clásica
+(function () {
+  console.log("Versión Clásica");
+})();
+
+//La Crockford (JavaScript The Good Parts)
+(function () {
+  console.log("Versión Crockford");
+})();
+
+//Unaria
++(function () {
+  console.log("Versión Unaria");
+})();
+
+//Facebook
+!(function () {
+  console.log("Versión Facebook");
+})();
+
+*/
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>
