@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD API REST FETCH</title>
+  </head>
+
+  <body>
+    <h1>CRUD API REST FETCH</h1>
+    <section class="crud">
+      <article>
+        <h2 class="crud-title">Agregar Santo</h2>
+        <form class="crud-form">
+          <input type="text" name="nombre" placeholder="nombre" required />
+          <br />
+          <input
+            type="text"
+            name="constelacion"
+            placeholder="constelación"
+            required
+          />
+          <br />
+          <input type="submit" value="Enviar" />
+          <input type="hidden" name="id" />
+        </form>
+      </article>
+      <article>
+        <h2>Ver Santos</h2>
+        <table class="crud-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Constelación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+    </section>
+    <template id="crud-template">
+      <tr>
+        <td class="name"></td>
+        <td class="constellation"></td>
+        <td>
+          <button class="edit">Editar</button>
+          <button class="delete">Eliminar</button>
+        </td>
+      </tr>
+    </template>
+    <script>
+      const d = document,
+        $table = d.querySelector(".crud-table"),
+        $form = d.querySelector(".crud-form"),
+        $title = d.querySelector(".crud-title"),
+        $template = d.getElementById("crud-template").content,
+        $fragment = d.createDocumentFragment();
+
+      //Creamos una función asincrona para usar async-await
+      const getAll = async () => {
+        //Iniciamos nuestro bloque try-catch para el manejo de errores
+        try {
+          /*
+          En una variable almacenamos la respuesta de la petición
+          fetch, con un await para esperar la respuesta. Posteriormente
+          convertimos la respuesta obtenida a un formato JSON
+          */
+          let res = await fetch("http://localhost:5555/santos"),
+            json = await res.json();
+
+          /*
+          Realizamos la validación del parametro ok para lanzar error
+          en caso de que no sea verdadero
+          */
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+
+          //Imprimimos en consola el json que es un array
+          console.log(json);
+
+          //Por cada elemento del JSON que en este caso devuelve un array..
+          json.forEach((el) => {
+            /*
+            Del template seleccionamos el elemento con la clase .name y en su contenido
+            insertamos el valor de name del array, y en el elemento con la clase
+            constellation insertamos el valor de constelación del array
+            */
+            $template.querySelector(".name").textContent = el.nombre;
+            $template.querySelector(".constellation").textContent =
+              el.constelacion;
+            /*
+              Por cada botón edit, agregamos un data-attribute, donde el
+              valor que le corresponde
+              */
+            $template.querySelector(".edit").dataset.id = el.id;
+            $template.querySelector(".edit").dataset.name = el.nombre;
+            $template.querySelector(".edit").dataset.constellation =
+              el.constelacion;
+            //En el botón delete solo agregamos el data-attribute del id
+            $template.querySelector(".delete").dataset.id = el.id;
+            //Clonamos el template y lo agregamos al fragmento
+            let $clone = d.importNode($template, true);
+            $fragment.appendChild($clone);
+          });
+
+          //Agregamos el fragmento al cuerpo de la tabla
+          $table.querySelector("tbody").appendChild($fragment);
+        } catch (error) {
+          //Creamos un mensaje de error por si el statusText esta vació
+          let message = error.statusText || "Ocurrió un error";
+          //Agregamos el mensaje al final de la tabla
+          $table.insertAdjacentHTML(
+            "afterend",
+            `<p><b>Error ${error.status}: ${message}</b></p>`
+          );
+        }
+      };
+
+      //El evento de la carga del DOM ejecutamos la función para traer los datos
+      d.addEventListener("DOMContentLoaded", getAll);
+
+      //Para el evento submit del formulario creamos una función asíncrona
+      d.addEventListener("submit", async (e) => {
+        //Si el elemento que origina el evento es el $form...
+        if (e.target === $form) {
+          //Prevenimos el comportamiento por defecto
+          e.preventDefault();
+
+          console.log("Entramos al form");
+
+          /*
+          Evaluamos si el elemento id del elemento que origina el evento no tiene un valor
+          entonces hacemos uun insert por medio de POST, sino quiere decir que si hay un valor
+          en dicho elemento por lo que hacemos un PUT
+          */
+          if (!e.target.id.value) {
+            //CREATE - POST
+            try {
+              /*
+              Creamos un objeto options, que servira como segundo parametro del fetch
+              donde indicamos el metodo, las cabeceras en forma de objeto, y los datos los
+              pasamos en body convirtiendo el JSON en una cadena de texto.
+
+              Despues creamos una variable con el fetch
+              */
+              let options = {
+                  method: "POST",
+                  headers: {
+                    "Content-type": "application/json; charset=utf-8",
+                  },
+                  body: JSON.stringify({
+                    nombre: e.target.nombre.value,
+                    constelacion: e.target.constelacion.value,
+                  }),
+                },
+                res = await fetch("http://localhost:5555/santos", options),
+                json = await res.json();
+
+              if (!res.ok)
+                throw { status: res.status, statusText: res.statusText };
+              location.reload();
+            } catch (error) {
+              //Creamos un mensaje de error por si el statusText esta vació
+              let message = error.statusText || "Ocurrió un error";
+              //Agregamos el mensaje al final de la tabla
+              $form.insertAdjacentHTML(
+                "afterend",
+                `<p><b>Error ${error.status}: ${message}</b></p>`
+              );
+            }
+          } else {
+            //UPDATE - PUT
+            try {
+              /*
+              Creamos un objeto options, que servira como segundo parametro del fetch
+              donde indicamos el metodo, las cabeceras en forma de objeto, y los datos los
+              pasamos en body convirtiendo el JSON en una cadena de texto.
+
+              Deespues creamos una variable con el fetch
+              */
+              let options = {
+                  method: "PUT",
+                  headers: {
+                    "Content-type": "application/json; charset=utf-8",
+                  },
+                  body: JSON.stringify({
+                    nombre: e.target.nombre.value,
+                    constelacion: e.target.constelacion.value,
+                  }),
+                },
+                res = await fetch(
+                  `http://localhost:5555/santos/${e.target.id.value}`,
+                  options
+                ),
+                json = await res.json();
+
+              if (!res.ok)
+                throw { status: res.status, statusText: res.statusText };
+              location.reload();
+            } catch (error) {
+              //Creamos un mensaje de error por si el statusText esta vació
+              let message = error.statusText || "Ocurrió un error";
+              //Agregamos el mensaje al final de la tabla
+              $form.insertAdjacentHTML(
+                "afterend",
+                `<p><b>Error ${error.status}: ${message}</b></p>`
+              );
+            }
+          }
+        }
+      });
+
+      d.addEventListener("click", async (e) => {
+        if (e.target.matches(".edit")) {
+          $title.textContent = "Editar Santo";
+          $form.nombre.value = e.target.dataset.name;
+          $form.constelacion.value = e.target.dataset.constellation;
+          $form.id.value = e.target.dataset.id;
+        }
+
+        if (e.target.matches(".delete")) {
+          let isDelete = confirm(
+            `¿Estas seguro de eliminar el id ${e.target.dataset.id}?`
+          );
+
+          if (isDelete) {
+            //DELETE
+            try {
+              /*
+              Creamos un objeto options, que servira como segundo parametro del fetch
+              donde indicamos el metodo, las cabeceras en forma de objeto, y los datos los
+              pasamos en body convirtiendo el JSON en una cadena de texto.
+
+              Deespues creamos una variable con el fetch
+              */
+              let options = {
+                  method: "DELETE",
+                  headers: {
+                    "Content-type": "application/json; charset=utf-8",
+                  },
+                },
+                res = await fetch(
+                  `http://localhost:5555/santos/${e.target.dataset.id}`,
+                  options
+                ),
+                json = await res.json();
+
+              if (!res.ok)
+                throw { status: res.status, statusText: res.statusText };
+
+              location.reload();
+            } catch (error) {
+              //Creamos un mensaje de error por si el statusText esta vació
+              let message = error.statusText || "Ocurrió un error";
+              //Agregamos el mensaje al final de la tabla
+              alert(`Error ${error.status}: ${message}`);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

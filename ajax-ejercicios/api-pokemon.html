@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemons</title>
+    <style>
+      html {
+        text-align: center;
+      }
+
+      .grid-fluid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        text-align: center;
+      }
+
+      .loader {
+        display: block;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pokemons</h1>
+    <nav class="links"></nav>
+    <main class="grid-fluid"></main>
+    <script>
+      const d = document,
+        $main = d.querySelector("main"),
+        $links = d.querySelector(".links");
+
+      let pokeAPI = "https://pokeapi.co/api/v2/pokemon/";
+
+      async function loadPokemons(url) {
+        try {
+          //Insertamos el loader
+          $main.innerHTML = `<img src="../assets/loader.svg" alt="Cargando..." class="loader">`;
+
+          /* Hacemos una petición a la pokeAPI la cual trae 
+          20 pokemones por paginación, incluyendo un parametro
+          que indica los 20 proximos y los 20 anteriores */
+          let res = await fetch(url),
+            json = await res.json(),
+            $template = "",
+            $prevLink,
+            $nextLink;
+
+          console.log(json);
+
+          //En caso de que el codigo de respuesta sea falso lanzamos el error
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+
+          /* Iteramos cada uno de los pokemones que trae la API
+          usando for ya que es bloqueante y esperará en recibir
+          los recursos necesarios, en esta caso esperará recibir
+          los datos de cada pokemon individual */
+          for (let i = 0; i < json.results.length; i++) {
+            //console.log(json.results[i]);
+            try {
+              /* Hacemos una petición para traer los datos de 
+                cada pokemon individual por medio de su url*/
+              let res = await fetch(json.results[i].url),
+                pokemon = await res.json();
+
+              //console.log(res, pokemon);
+
+              //En caso de que el codigo de respuesta sea falso lanzamos el error
+              if (!res.ok)
+                throw { status: res.status, statusText: res.statusText };
+
+              $template += `
+                <figure>
+                    <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+                    <figcaption>${pokemon.name}</figcaption>
+                    </figure>
+            `;
+            } catch (error) {
+              console.log(err);
+              let message = err.statusText || "Ocurrió un error";
+              $template += `
+          <figure>
+            <figcaption>Error ${error.status}: ${message}</figcaption>
+            </figure>
+          `;
+            }
+          }
+
+          $main.innerHTML = $template;
+          $prevLink = json.previous ? `<a href="${json.previous}">◀️</a>` : "";
+          $nextLink = json.next ? `<a href="${json.next}">⏭️</a>` : "";
+          $links.innerHTML = $prevLink + " " + $nextLink;
+        } catch (err) {
+          //Tratamiento del error
+          console.log(err);
+          let message = err.statusText || "Ocurrió un error";
+          $main.innerHTML = `<p>Error ${err.status}: ${message}</p>`;
+        }
+      }
+
+      d.addEventListener("DOMContentLoaded", (e) => loadPokemons(pokeAPI));
+      d.addEventListener("click", (e) => {
+        if (e.target.matches(".links a")) {
+          e.preventDefault();
+          loadPokemons(e.target.getAttribute("href"));
+        }
+      });
+    </script>
+  </body>
+</html>

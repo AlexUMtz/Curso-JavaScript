@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uploader con AJAX</title>
+    <style>
+      html {
+        box-sizing: o;
+        font-family: sans-serif;
+        font-size: 16px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100vh;
+      }
+
+      progress {
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <input type="file" name="files" id="files" multiple />
+    </main>
+    <script>
+      const d = document,
+        $main = d.querySelector("main"),
+        $files = d.getElementById("files");
+
+      const uploader = (file) => {
+        // console.log(file);
+
+        /*
+        formData nos permite crear un formulario dinamico, ya que en este
+        caso no tenemos el input dentro de un formulario
+        */
+        const xhr = new XMLHttpRequest(),
+          formData = new FormData();
+
+        /*
+        Agregamos una variable al formulario por medio de formDate, donde
+        indicamos el nombre del campo, y el valor del campo.
+        */
+        formData.append("file", file);
+
+        xhr.addEventListener("readystatechange", (e) => {
+          if (xhr.readyState !== 4) return;
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            let json = JSON.parse(xhr.responseText);
+            console.log(json);
+          } else {
+            let message = xhr.statusText || "Ocurrió un error";
+            console.error(`Error ${xhr.status}: ${message}`);
+          }
+        });
+
+        xhr.open("POST", "assets/uploader.php");
+
+        //Esta cabecera es porque enviamos archivos binarios
+        xhr.setRequestHeader("enc-type", "multipart/form-data");
+
+        xhr.send(formData);
+      };
+
+      const progressUpload = (file) => {
+        const $progress = d.createElement("progress"),
+          $span = d.createElement("span");
+
+        //Establecemos el valor inicial y maximo de la barra
+        $progress.value = 0;
+        $progress.max = 100;
+
+        //Los insertamos antes del final de main
+        $main.insertAdjacentElement("beforeend", $progress);
+        $main.insertAdjacentElement("beforeend", $span);
+
+        /*
+        FileReader es un API para la lectura de archivos,
+        en este caso lo usaremos para calcular los bits y
+        mostrarlos en la barra de progreso.
+        */
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.addEventListener("progress", (e) => {
+          //console.log(e);
+          /*
+          Este evento devuelve dos valores importantes que se usaran
+
+          */
+          let progress = parseInt((e.loaded * 100) / e.total);
+          $progress.value = progress;
+          $span.innerHTML = `<b>${file.name} - ${progress}%</b>`;
+        });
+
+        fileReader.addEventListener("loadend", (e) => {
+          uploader(file);
+
+          setTimeout(() => {
+            $main.removeChild($progress);
+            $main.removeChild($span);
+            $files.value = "";
+          }, 3000);
+        });
+      };
+
+      d.addEventListener("change", (e) => {
+        if (e.target === $files) {
+          //   console.log(e.target.files);
+
+          /*
+          Array.from() permite que aplicar los métodos de un array
+          a un objeto.
+          */
+          const files = Array.from(e.target.files);
+
+          files.forEach((el) => progressUpload(el));
+        }
+      });
+    </script>
+  </body>
+</html>

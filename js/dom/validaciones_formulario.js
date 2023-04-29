@@ -41,13 +41,13 @@ export default function contactFormValidations() {
   d.addEventListener("submit", (e) => {
     // e.preventDefault();
     alert("Enviando formulario");
-    const $loarder = d.querySelector(".contact-form-loader"),
+    const $loader = d.querySelector(".contact-form-loader"),
       $response = d.querySelector(".contact-form-response");
 
-    $loarder.classList.remove("none");
+    $loader.classList.remove("none");
 
     setTimeout(() => {
-      $loarder.classList.add("none");
+      $loader.classList.add("none");
       $response.classList.remove("none");
 
       $form.reset();
