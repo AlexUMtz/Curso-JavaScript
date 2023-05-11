@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estado Inmutable</title>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Estado Inmutable</h1>
+    <form id="todo-form">
+      <input type="text" name="" id="todo-item" placeholder="Tarea por hacer" />
+      <input type="submit" value="Agregar" />
+    </form>
+    <h2>List de Tareas</h2>
+    <ul id="todo-list"></ul>
+    <script>
+      const d = document;
+
+      //El State Global
+      const state = {
+        todoList: [],
+      };
+
+      //Template UI
+      const template = () => {
+        if (template.data.todoList.length < 1) {
+          return `<p><em>Lista sin tareas por hacer.</em></p>`;
+        }
+
+        let todos = template.data.todoList
+          .map((item) => `<li>${item}</li>`)
+          .join("");
+
+        return todos;
+      };
+
+      // Agregar State al Template que genera el Componente de UI (State Local)
+      template.data = {
+        todoList: [],
+      };
+
+      //Render UI
+      const render = () => {
+        console.log("Estado local", template.data);
+        console.log("Estado global", state);
+        $list = d.getElementById("todo-list");
+        if (!$list) return;
+        $list.innerHTML = template();
+      };
+
+      //Actualizar el State de forma reactividad
+      const setState = (obj) => {
+        for (let key in obj) {
+          if (template.data.hasOwnProperty(key)) {
+            template.data[key] = obj[key];
+          }
+        }
+
+        render();
+      };
+
+      //Obtenemos una copia inmutable del State
+      const getState = () => JSON.parse(JSON.stringify(template.data));
+
+      d.addEventListener("DOMContentLoaded", render);
+
+      //Estableciendo valores por defecto al State
+      setState({
+        todoList: ["Tarea 1", "Tarea 2", "Tarea 3"],
+      });
+
+      d.addEventListener("submit", (e) => {
+        if (!e.target.matches("#todo-form")) return false;
+
+        e.preventDefault();
+
+        const $item = d.getElementById("todo-item");
+        if (!$item) return;
+
+        //Actualizar State de forma reactiva
+        const lastState = getState();
+        lastState.todoList.push($item.value);
+        setState({ todoList: lastState.todoList });
+
+        //Limpiar input
+        $item.value = "";
+        $item.focus();
+      });
+    </script>
+  </body>
+</html>
